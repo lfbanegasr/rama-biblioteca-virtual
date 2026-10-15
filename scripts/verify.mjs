@@ -6,7 +6,17 @@ const browser=await chromium.launch({executablePath:process.env.CHROME_PATH || '
 const errors=[], failedRequests=[], externalRequests=[], checks=[], screenshots=[];
 await mkdir('qa/screenshots',{recursive:true});
 const check=(name,condition)=>{assert.ok(condition,name);checks.push(name);};
-async function capture(page,name,fullPage=true){await page.evaluate(()=>document.fonts.ready);const path=`qa/screenshots/${name}.png`;await page.screenshot({path,fullPage});screenshots.push(path);}
+async function capture(page,name,fullPage=true){
+  await page.evaluate(async()=>{
+    await document.fonts.ready;
+    // Load lower-page photographs and trigger the finite section entrances.
+    for(const image of document.querySelectorAll('img')) image.loading='eager';
+    await Promise.all([...document.images].map(image=>image.decode().catch(()=>{})));
+    for(const section of document.querySelectorAll('[data-reveal]'))section.classList.add('is-revealed');
+  });
+  const path=`qa/screenshots/${name}.png`;
+  await page.screenshot({path,fullPage,animations:'disabled'});screenshots.push(path);
+}
 async function noOverflow(page,name){check(`Sin desbordamiento horizontal: ${name}`,await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));}
 try {
   for(const width of [1440,390]){

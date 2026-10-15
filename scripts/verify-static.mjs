@@ -4,7 +4,7 @@ import { resolve, sep, extname } from 'node:path';
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 const root=resolve('dist');
-const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.jpg':'image/jpeg','.svg':'image/svg+xml','.woff2':'font/woff2','.pdf':'application/pdf'};
+const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.jpg':'image/jpeg','.webp':'image/webp','.svg':'image/svg+xml','.woff2':'font/woff2','.pdf':'application/pdf'};
 // A local-only fixture checks that a basic static host can serve a subfolder.
 const server=createServer(async(req,res)=>{
   try {

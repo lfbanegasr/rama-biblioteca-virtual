@@ -27,7 +27,7 @@ export function BookCover({ document: doc, small = false }: { document: LibraryD
   </div>;
 }
 export function DocumentCard({ document: doc, href, compact = false }: { document: LibraryDocument; href: string; compact?: boolean }) {
-  return <article className={`document-card ${compact ? 'document-row' : ''}`}>
+  return <article className={`document-card ${compact ? 'document-row' : ''}`} data-reveal>
     <a href={href} className="cover-link" tabIndex={-1} aria-hidden="true"><BookCover document={doc} small={compact}/></a>
     <div className="document-info"><div className="document-meta"><span className="type-label">{doc.type}</span><span>{doc.year}</span></div>
       <h3><a href={href}>{doc.title}</a></h3><p className="document-description">{doc.description}</p>

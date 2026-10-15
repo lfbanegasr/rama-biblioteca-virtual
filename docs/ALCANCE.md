@@ -17,6 +17,9 @@ Referencia consultada el 15 de octubre de 2026: https://fundacion-rama.com/
 - **Tipografía:** Raleway, confirmada como fuente aplicada a cuerpo y navegación mediante navegador. Se incluye una copia local obtenida de Google Fonts. Licencia SIL Open Font License en `public/fonts/OFL-Raleway.txt`.
 - **Ilustraciones, portadas e iconos:** realizados en CSS y SVG para este prototipo; son recursos de demostración, no portadas de libros reales ni un nuevo logotipo.
 - **PDF:** creado expresamente para verificar la apertura y descarga. No se descargaron libros ni se importó el catálogo real del sitio.
+- **Fotografías de la revisión visual:** tres imágenes que ya utiliza el sitio público de RAMA. Sus URLs se registran en `public/assets/procedencia-imagenes.json`; se guardaron y optimizaron localmente. Se utilizan como imágenes de referencia, sin afirmar que retraten actividades o integrantes de RAMA. La selección definitiva se validará con la institución.
+
+La revisión visual incorpora una portada fotográfica para A y un expositor de portadas para B. Ambas conservan sus objetivos y funciones de demostración. Se ampliaron títulos y textos secundarios y se añadieron cabecera fija, progreso de lectura, entradas finitas de sección, respuesta de las portadas al cursor y retorno al inicio. Los efectos se desactivan o reducen con la preferencia de movimiento reducido del dispositivo. No se requiere una biblioteca de animaciones adicional.
 
 El sitio actual menciona una biblioteca privada y más de 30.000 libros. Esa información requiere validación institucional y no se adoptó como volumen confirmado ni como requisito de autenticación. Tampoco se copiaron estadísticas, trayectoria, testimonios, contactos o misión como datos aprobados para esta nueva propuesta.
 
@@ -33,4 +36,4 @@ El sitio actual menciona una biblioteca privada y más de 30.000 libros. Esa inf
 9. Concretar formulario real, tratamiento de datos y canales institucionales antes de habilitar comunicaciones.
 10. Definir entregables, revisiones, orientación a administradores, plazo y presupuesto de desarrollo.
 
-El resultado no se ha desplegado ni conecta cuentas, servicios de pago, analítica o almacenamiento externo.
+El usuario habilitó una publicación de presentación en https://rama-biblioteca-virtual.vercel.app/. Esta revisión se prepara localmente y aparecerá en esa dirección al actualizar GitHub y completar el despliegue. El prototipo no conecta cuentas, servicios de pago, analítica ni almacenamiento externo. El sitio original de la Fundación permanece independiente.

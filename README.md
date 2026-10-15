@@ -1,6 +1,6 @@
 # Prototipos web de Fundación RAMA
 
-Dos alternativas locales y navegables para definir el proyecto de web institucional y biblioteca virtual. Son demostraciones frontend, no un sistema de producción. No se ha publicado el sitio ni conectado servicios externos.
+Dos alternativas navegables para definir el proyecto de web institucional y biblioteca virtual. Son demostraciones frontend, no un sistema de producción. El usuario habilitó una versión de presentación en https://rama-biblioteca-virtual.vercel.app/. Los cambios locales se reflejarán allí cuando se actualice GitHub y finalice el despliegue de Vercel.
 
 ## Abrir los prototipos en este equipo
 
@@ -24,8 +24,10 @@ El acceso por doble clic utiliza el puerto **4173**. En ese caso reemplaza 5173 
 
 ## Diferencias entre las propuestas
 
-- **A Institucional:** portada amplia, introducción a RAMA, selección de documentos en tarjetas y acceso a la información institucional. Predomina el fondo blanco, con azul institucional y acentos verdes.
-- **B Biblioteca:** portada centrada en el buscador, accesos por tipo de documento, categorías y documentos en lista. El catálogo abre por defecto en una vista más compacta. Mantiene la misma identidad y los mismos contenidos de muestra.
+- **A Institucional:** portada fotográfica amplia en azul institucional, introducción a RAMA, composición de imágenes de lectura, selección de documentos en tarjetas y acceso a información institucional.
+- **B Biblioteca:** buscador destacado junto a un expositor de portadas que responde al cursor, accesos por tipo y categoría y documentos en lista. El catálogo abre en una vista más compacta. Mantiene la misma identidad y los mismos contenidos de muestra.
+
+Ambas incorporan cabecera fija, indicador de recorrido, entradas de sección al desplazarse, efectos de interacción en las portadas y botón para volver arriba. Las animaciones son breves y respetan `prefers-reduced-motion`. No hay carruseles automáticos ni contenido oculto a la espera de animación.
 
 Ambas incluyen inicio, catálogo, ficha de documento, información institucional y contacto. El catálogo tiene búsqueda sin distinción de tildes, filtros combinables, ordenación, paginación, cambio entre tarjetas y lista y estado sin resultados. Las direcciones del catálogo conservan los criterios de consulta, por lo que se pueden copiar para volver a esa búsqueda.
 
@@ -46,6 +48,7 @@ Para repetir las pruebas automatizadas, inicia primero la vista previa en 4173 y
 pnpm test:e2e
 node scripts/accessibility.mjs
 node scripts/verify-static.mjs
+node scripts/verify-presentation.mjs
 ```
 
 Las pruebas utilizan Google Chrome instalado en su ruta habitual de Windows. Si está en otra ubicación, configura `CHROME_PATH`. `RAMA_URL` permite cambiar la dirección del servidor bajo prueba. Las capturas y el informe se guardan en `qa/`.
@@ -58,15 +61,18 @@ Los **14 registros son ficticios** y están identificados como muestras. No repr
 
 El formulario de contacto comprueba los campos en el navegador y muestra una confirmación explícita de demostración. **No envía ni guarda mensajes**. No se incluyen usuarios, membresías, cargas de archivos, backend, OCR, búsqueda dentro del PDF, pagos ni administración de contenidos.
 
-El logo y la fuente se guardaron localmente. Durante el uso del prototipo no se requieren solicitudes a otras páginas.
+El logo, la fuente y las imágenes se guardaron localmente. Durante el uso del prototipo no se requieren solicitudes a otras páginas. La procedencia de las imágenes de referencia se registra en `public/assets/procedencia-imagenes.json`; se usan como ambientación de la propuesta y su selección definitiva debe validarse con la institución.
 
 ## Archivos principales
 
 ```text
-src/App.tsx                Vistas y navegación de ambas propuestas
+src/App.tsx                Vistas internas y navegación de ambas propuestas
+src/Home.tsx               Portadas y secciones de presentación A y B
+src/usePresentation.ts     Entradas de sección, recorrido y movimiento reducido
 src/components.tsx         Componentes compartidos e ilustración editorial
 src/data/documents.ts      Datos ficticios y URLs de PDF
 src/styles.css             Identidad visual y adaptación responsive
+src/redesign.css           Escala, fotografía, catálogo y movimiento del rediseño
 public/assets/             Logotipo institucional de referencia
 public/fonts/              Raleway y su licencia
 public/documents/          PDF de demostración

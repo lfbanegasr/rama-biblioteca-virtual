@@ -12,6 +12,7 @@ try {
         const route=`#/${variant}/${view}`;
         await page.goto(`http://127.0.0.1:4173/${route}`,{waitUntil:'networkidle'});
         await page.evaluate(()=>document.fonts.ready);
+        await page.waitForFunction(()=>document.getAnimations().every(animation=>animation.playState!=='running'));
         const scan=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze();
         results.push({width,route,violations:scan.violations.map(v=>({id:v.id,impact:v.impact,description:v.description,nodes:v.nodes.map(n=>({target:n.target,summary:n.failureSummary}))}))});
       }

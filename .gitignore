@@ -4,3 +4,6 @@ dist/
 .cache/
 *.log
 *.tsbuildinfo
+qa/*
+!qa/comparacion-prototipos.png
+!qa/LEEME.md

@@ -1,6 +1,8 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { categories, documents, documentTypes, normalize } from './data/documents';
-import { BookCover, DocumentCard, Icon, LibraryIllustration } from './components';
+import { BookCover, DocumentCard, Icon } from './components';
+import { Home } from './Home';
+import { usePresentation } from './usePresentation';
 
 type Variant = 'a' | 'b';
 function navigate(hash: string) {
@@ -23,6 +25,7 @@ export default function App() {
     return () => window.removeEventListener('hashchange', update);
   }, []);
   const { variant, page, id, query } = route;
+  usePresentation(`${variant}/${page}/${id || ''}`);
   const href = (target: string, suffix = '') => `#/${variant}/${target}${suffix}`;
   useEffect(() => {
     const currentPath = `${variant}/${page}/${id || ''}`;
@@ -42,7 +45,7 @@ export default function App() {
     navigate(link.hash);
   }}>
     <a className="skip-link" href="#contenido" onClick={event => { event.preventDefault(); document.getElementById('contenido')?.focus(); }}>Saltar al contenido</a>
-    <div className="prototype-bar"><div className="container prototype-inner"><span><span className="demo-dot"/> Prototipo <span className="demo-description">· Contenido de muestra</span></span><div className="variant-switch" aria-label="Cambiar propuesta">
+    <div className="site-chrome"><div className="prototype-bar"><div className="container prototype-inner"><span><span className="demo-dot"/> Prototipo <span className="demo-description">· Contenido de muestra</span></span><div className="variant-switch" aria-label="Cambiar propuesta">
       <a href={switchVariant('a')} aria-current={variant === 'a' ? 'true' : undefined}><span>A</span> Institucional</a>
       <a href={switchVariant('b')} aria-current={variant === 'b' ? 'true' : undefined}><span>B</span> Biblioteca</a>
     </div></div></div>
@@ -53,34 +56,18 @@ export default function App() {
         {[['inicio','Inicio'], ['institucion','La Fundación'], ['biblioteca','Biblioteca'], ['contacto','Contacto']].map(([target,label]) => <a key={target} href={href(target)} aria-current={page === target || (target === 'biblioteca' && page === 'documento') ? 'page' : undefined}>{label}</a>)}
         <a className="header-cta" href={href('biblioteca')}>Explorar biblioteca <Icon name="arrow" size={17}/></a>
       </nav>
-    </div></header>
+    </div><span className="reading-progress" aria-hidden="true"/></header></div>
     <main id="contenido" tabIndex={-1}>
-      {page === 'inicio' ? <Home variant={variant} href={href}/> : page === 'biblioteca' ? <Catalog variant={variant} href={href} query={query}/> : page === 'documento' ? <DocumentDetail id={id} href={href}/> : page === 'institucion' ? <Institution href={href}/> : page === 'contacto' ? <Contact/> : <NotFound href={href}/>}
+      {page === 'inicio' ? <Home variant={variant} href={href} navigate={navigate}/> : page === 'biblioteca' ? <Catalog variant={variant} href={href} query={query}/> : page === 'documento' ? <DocumentDetail id={id} href={href}/> : page === 'institucion' ? <Institution href={href}/> : page === 'contacto' ? <Contact/> : <NotFound href={href}/>}
     </main>
+    <button className="back-to-top" aria-label="Volver al inicio de la página" onClick={() => {
+      window.scrollTo({top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'});
+      document.getElementById('contenido')?.focus({preventScroll: true});
+    }}><Icon name="arrow" size={21}/></button>
     <footer className="site-footer"><div className="container footer-main"><div><a className="footer-brand" href={href('inicio')}>Fundación <strong>RAMA</strong><span/></a><p>Información institucional y una biblioteca<br/>para explorar documentos.</p></div><div className="footer-links"><a href={href('institucion')}>La Fundación</a><a href={href('biblioteca')}>Biblioteca virtual</a><a href={href('contacto')}>Contacto</a></div><div className="footer-note"><Icon name="book" size={25}/><p>Una propuesta para conversar.<br/><span>Textos y documentos de demostración.</span></p></div></div><div className="container footer-bottom"><span>Fundación RAMA · Propuesta de sitio web</span><span>Diseño y funciones sujetos a validación institucional</span></div></footer>
   </div>;
 }
 type Href = (target: string, suffix?: string) => string;
-function SearchForm({ href, large = false }: { href: Href; large?: boolean }) {
-  const [value, setValue] = useState('');
-  function submit(event: FormEvent) { event.preventDefault(); navigate(href('biblioteca', value.trim() ? `?q=${encodeURIComponent(value.trim())}` : '')); }
-  return <form className={`hero-search ${large ? 'large-search' : ''}`} onSubmit={submit} role="search"><label htmlFor="busqueda-inicio" className="sr-only">Buscar documentos por título, autor o tema</label><Icon name="search" size={24}/><input id="busqueda-inicio" value={value} onChange={e => setValue(e.target.value)} placeholder="¿Qué te gustaría consultar?"/><button type="submit">Buscar <Icon name="arrow" size={19}/></button></form>;
-}
-function Home({ variant, href }: { variant: Variant; href: Href }) {
-  if (variant === 'b') return <>
-    <section className="search-hero"><div className="container"><div className="eyebrow"><span/> BIBLIOTECA VIRTUAL RAMA</div><h1>Tu próxima consulta<br/>empieza <em>aquí.</em></h1><p>Explora libros, guías y documentos en un solo lugar.</p><SearchForm href={href} large/><div className="search-hints"><span>Explora por tipo</span>{documentTypes.map(type => <a key={type} href={href('biblioteca',`?tipo=${encodeURIComponent(type)}`)}>{type}<Icon name="arrow" size={14}/></a>)}</div></div><div className="hero-index" aria-hidden="true">R<br/>A<br/>M<br/>A</div></section>
-    <section className="library-home container"><div className="section-heading"><div><p className="eyebrow dark">PARA EMPEZAR</p><h2>Una colección, distintas miradas.</h2></div><a href={href('biblioteca')} className="text-link">Ver los {documents.length} documentos <Icon name="arrow"/></a></div><div className="category-tiles">{categories.map((category,i)=><a key={category} href={href('biblioteca',`?categoria=${encodeURIComponent(category)}`)}><span className="category-number">0{i+1}</span><Icon name={i%2 ? 'book' : 'file'} size={26}/><h3>{category}</h3><span>{documents.filter(doc=>doc.category===category).length} documentos de muestra <Icon name="arrow" size={18}/></span></a>)}</div>
-    <div className="section-heading latest-heading"><div><p className="eyebrow dark">CATÁLOGO DE DEMOSTRACIÓN</p><h2>Documentos para explorar</h2></div><span className="sample-pill">Selección de muestra</span></div><div className="home-document-list">{documents.slice(0,4).map(doc=><DocumentCard key={doc.id} document={doc} compact href={href(`documento/${doc.id}`)}/>)}</div>
-    <div className="institution-strip"><div><span className="eyebrow dark">MÁS ALLÁ DEL CATÁLOGO</span><h2>Conoce el espacio institucional.</h2><p>Una sección para presentar la información que RAMA comparta y valide.</p></div><a className="button secondary" href={href('institucion')}>La Fundación <Icon name="arrow"/></a></div></section>
-  </>;
-  return <>
-    <section className="institutional-hero container"><div className="hero-copy"><p className="eyebrow dark"><span/> FUNDACIÓN RAMA</p><h1>Un lugar para<br/>encontrar <em>nuevas<br/>perspectivas.</em></h1><p className="hero-intro">Información institucional y documentos para acompañar la lectura, la consulta y la investigación.</p><div className="hero-actions"><a className="button primary" href={href('biblioteca')}>Explorar biblioteca <Icon name="arrow"/></a><a className="button plain" href={href('institucion')}>Conocer la propuesta <Icon name="arrow" size={18}/></a></div><div className="hero-footnote"><span className="small-rule"/> Una propuesta de biblioteca virtual para Fundación RAMA.</div></div><LibraryIllustration/></section>
-    <div className="collection-band"><div className="container"><span>UN PUNTO DE ENCUENTRO CON LOS DOCUMENTOS</span><div>{['Libros','Jurisprudencia','Investigaciones','Guías de consulta'].map(label=><span key={label}><Icon name="book" size={18}/>{label}</span>)}</div></div></div>
-    <section className="featured-section container"><div className="section-heading"><div><p className="eyebrow dark">BIBLIOTECA VIRTUAL</p><h2>Una invitación a explorar.</h2><p>Descubre cómo podrías consultar la colección documental.</p></div><a href={href('biblioteca')} className="text-link">Ver catálogo completo <Icon name="arrow"/></a></div><div className="featured-grid">{documents.slice(0,4).map(doc=><DocumentCard key={doc.id} document={doc} href={href(`documento/${doc.id}`)}/>)}</div></section>
-    <section className="reading-section"><div className="container reading-inner"><div className="reading-mark" aria-hidden="true"><Icon name="book" size={92}/><span>RAMA</span></div><div><p className="eyebrow dark">INFORMACIÓN INSTITUCIONAL</p><h2>La Fundación,<br/>en sus propias palabras.</h2><p>Este espacio está pensado para presentar a RAMA, su información y sus actividades. Los textos se elaborarán con una persona designada por la institución y se publicarán después de su validación.</p><a className="text-link" href={href('institucion')}>Conocer esta sección <Icon name="arrow"/></a></div></div></section>
-    <section className="container end-cta"><div><p className="eyebrow dark">ENCUENTRA UN PUNTO DE PARTIDA</p><h2>¿Qué te gustaría leer hoy?</h2></div><a className="button primary" href={href('biblioteca')}>Consultar documentos <Icon name="arrow"/></a></section>
-  </>;
-}
 function Catalog({ variant, href, query }: { variant: Variant; href: Href; query: string }) {
   const params = new URLSearchParams(query);
   const search=params.get('q') || '', category=params.get('categoria') || '', type=params.get('tipo') || '', sort=params.get('orden') || 'recientes';
